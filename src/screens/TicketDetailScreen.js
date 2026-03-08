@@ -18,8 +18,12 @@ import {
 } from 'react-native';
 import { PRIORITY_COLORS, PRIORITY_LABELS, STATUS_COLORS } from '../api/config';
 import { deleteTicket, getTicket, getTicketReplies, replyToTicket } from '../api/osticket';
+import { useThemeContext } from '../context/ThemeContext';
 
 const TicketDetailScreen = ({ route, navigation }) => {
+  const { theme } = useThemeContext();
+  const isDark = theme === 'dark';
+  const styles = createStyles(isDark);
   const { ticketId } = route.params;
 
   const [loading, setLoading] = useState(true);
@@ -371,7 +375,7 @@ const TicketDetailScreen = ({ route, navigation }) => {
         <TextInput
           style={styles.replyInput}
           placeholder="Type a reply..."
-          placeholderTextColor="#999"
+          placeholderTextColor={isDark ? "#aaa" : "#999"}
           value={replyText}
           onChangeText={setReplyText}
           multiline
@@ -397,13 +401,13 @@ const TicketDetailScreen = ({ route, navigation }) => {
   );
 };
 
-const styles = StyleSheet.create({
+const createStyles = (isDark) => StyleSheet.create({
   flex: {
     flex: 1,
   },
   container: {
     flex: 1,
-    backgroundColor: '#f5f5f5',
+    backgroundColor: isDark ? '#121212' : '#f5f5f5',
   },
   scrollContent: {
     paddingBottom: 16,
@@ -415,18 +419,18 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#f5f5f5',
+    backgroundColor: isDark ? '#1e1e1e' : '#f5f5f5',
   },
   loadingText: {
     marginTop: 12,
     fontSize: 16,
-    color: '#666',
+    color: isDark ? '#aaa' : '#666',
   },
   errorContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#f5f5f5',
+    backgroundColor: isDark ? '#121212' : '#f5f5f5',
   },
   errorText: {
     fontSize: 16,
@@ -441,7 +445,7 @@ const styles = StyleSheet.create({
   ticketNumber: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: '#1976d2',
+    color: isDark ? '#90caf9' : '#1976d2',
   },
   badges: {
     flexDirection: 'row',
@@ -460,11 +464,11 @@ const styles = StyleSheet.create({
   subject: {
     fontSize: 20,
     fontWeight: 'bold',
-    color: '#333',
+    color: isDark ? '#eee' : '#333',
     marginBottom: 16,
   },
   metadataContainer: {
-    backgroundColor: '#fff',
+    backgroundColor: isDark ? '#1e1e1e' : '#fff',
     borderRadius: 8,
     padding: 16,
     marginBottom: 16,
@@ -476,15 +480,15 @@ const styles = StyleSheet.create({
   },
   metadataLabel: {
     fontSize: 14,
-    color: '#666',
+    color: isDark ? '#aaa' : '#666',
     fontWeight: '600',
   },
   metadataValue: {
     fontSize: 14,
-    color: '#333',
+    color: isDark ? '#eee' : '#333',
   },
   messageContainer: {
-    backgroundColor: '#fff',
+    backgroundColor: isDark ? '#1e1e1e' : '#fff',
     borderRadius: 8,
     padding: 16,
     marginBottom: 16,
@@ -492,26 +496,26 @@ const styles = StyleSheet.create({
   messageLabel: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#666',
+    color: isDark ? '#aaa' : '#666',
     marginBottom: 8,
   },
   messageText: {
     fontSize: 15,
-    color: '#333',
+    color: isDark ? '#eee' : '#333',
     lineHeight: 22,
   },
   actionButtons: {
     marginBottom: 16,
   },
   editButton: {
-    backgroundColor: '#1976d2',
+    backgroundColor: isDark ? '#90caf9' : '#1976d2',
     borderRadius: 8,
     padding: 16,
     alignItems: 'center',
     marginBottom: 12,
   },
   editButtonText: {
-    color: '#fff',
+    color: isDark ? '#121212' : '#fff',
     fontSize: 16,
     fontWeight: 'bold',
   },
@@ -532,7 +536,7 @@ const styles = StyleSheet.create({
 
   // ==================== REPLY THREAD STYLES ====================
   replySection: {
-    backgroundColor: '#fff',
+    backgroundColor: isDark ? '#1e1e1e' : '#fff',
     borderRadius: 12,
     padding: 16,
     marginBottom: 8,
@@ -543,22 +547,22 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 16,
     borderBottomWidth: 1,
-    borderBottomColor: '#eee',
+    borderBottomColor: isDark ? '#333' : '#eee',
     paddingBottom: 12,
   },
   replySectionTitle: {
     fontSize: 17,
     fontWeight: 'bold',
-    color: '#333',
+    color: isDark ? '#eee' : '#333',
   },
   refreshBtn: {
     paddingVertical: 4,
     paddingHorizontal: 10,
-    backgroundColor: '#e3f2fd',
+    backgroundColor: isDark ? '#2c2c2c' : '#e3f2fd',
     borderRadius: 16,
   },
   refreshBtnText: {
-    color: '#1976d2',
+    color: isDark ? '#90caf9' : '#1976d2',
     fontSize: 13,
     fontWeight: '600',
   },
@@ -570,7 +574,7 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   repliesLoadingText: {
-    color: '#888',
+    color: isDark ? '#aaa' : '#888',
     fontSize: 14,
   },
   emptyReplies: {
@@ -583,12 +587,12 @@ const styles = StyleSheet.create({
   },
   emptyRepliesText: {
     fontSize: 15,
-    color: '#999',
+    color: isDark ? '#888' : '#999',
     fontWeight: '600',
   },
   emptyRepliesSubtext: {
     fontSize: 13,
-    color: '#bbb',
+    color: isDark ? '#aaa' : '#bbb',
     marginTop: 4,
   },
   repliesList: {
@@ -611,17 +615,17 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
   },
   replyBubbleOwn: {
-    backgroundColor: '#1976d2',
+    backgroundColor: isDark ? '#90caf9' : '#1976d2',
     borderBottomRightRadius: 4,
   },
   replyBubbleOther: {
-    backgroundColor: '#f0f0f0',
+    backgroundColor: isDark ? '#333' : '#f0f0f0',
     borderBottomLeftRadius: 4,
   },
   replySenderName: {
     fontSize: 12,
     fontWeight: 'bold',
-    color: '#1976d2',
+    color: isDark ? '#90caf9' : '#1976d2',
     marginBottom: 3,
   },
   replyMessageText: {
@@ -629,21 +633,21 @@ const styles = StyleSheet.create({
     lineHeight: 20,
   },
   replyMessageTextOwn: {
-    color: '#fff',
+    color: isDark ? '#121212' : '#fff',
   },
   replyMessageTextOther: {
-    color: '#333',
+    color: isDark ? '#eee' : '#333',
   },
   replyTime: {
     fontSize: 11,
     marginTop: 4,
   },
   replyTimeOwn: {
-    color: 'rgba(255,255,255,0.7)',
+    color: isDark ? 'rgba(0,0,0,0.7)' : 'rgba(255,255,255,0.7)',
     textAlign: 'right',
   },
   replyTimeOther: {
-    color: '#999',
+    color: isDark ? '#aaa' : '#999',
   },
 
   // ==================== REPLY INPUT BAR ====================
@@ -652,9 +656,9 @@ const styles = StyleSheet.create({
     alignItems: 'flex-end',
     paddingHorizontal: 12,
     paddingVertical: 8,
-    backgroundColor: '#fff',
+    backgroundColor: isDark ? '#1e1e1e' : '#fff',
     borderTopWidth: 1,
-    borderTopColor: '#e0e0e0',
+    borderTopColor: isDark ? '#333' : '#e0e0e0',
     gap: 8,
   },
   replyInput: {
@@ -662,16 +666,16 @@ const styles = StyleSheet.create({
     minHeight: 40,
     maxHeight: 100,
     borderWidth: 1,
-    borderColor: '#ddd',
+    borderColor: isDark ? '#333' : '#ddd',
     borderRadius: 20,
     paddingHorizontal: 16,
     paddingVertical: 10,
     fontSize: 15,
-    color: '#333',
-    backgroundColor: '#f9f9f9',
+    color: isDark ? '#eee' : '#333',
+    backgroundColor: isDark ? '#2c2c2c' : '#f9f9f9',
   },
   sendButton: {
-    backgroundColor: '#1976d2',
+    backgroundColor: isDark ? '#90caf9' : '#1976d2',
     borderRadius: 20,
     paddingHorizontal: 20,
     paddingVertical: 10,
@@ -680,10 +684,10 @@ const styles = StyleSheet.create({
     minHeight: 40,
   },
   sendButtonDisabled: {
-    backgroundColor: '#b0bec5',
+    backgroundColor: isDark ? '#555' : '#b0bec5',
   },
   sendButtonText: {
-    color: '#fff',
+    color: isDark ? '#121212' : '#fff',
     fontSize: 15,
     fontWeight: 'bold',
   },

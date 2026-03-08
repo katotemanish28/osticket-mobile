@@ -1,23 +1,27 @@
 // src/screens/EditTicketScreen.js
 // Screen for editing an existing ticket
 
-import React, { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import {
-  View,
+  ActivityIndicator,
+  Alert,
+  ScrollView,
+  StyleSheet,
   Text,
   TextInput,
   TouchableOpacity,
-  StyleSheet,
-  ScrollView,
-  ActivityIndicator,
-  Alert,
+  View,
 } from 'react-native';
-import { updateTicket, getTicket } from '../api/osticket';
 import { VALIDATION } from '../api/config';
+import { getTicket, updateTicket } from '../api/osticket';
+import { useThemeContext } from '../context/ThemeContext';
 
 const EditTicketScreen = ({ route, navigation }) => {
+  const { theme } = useThemeContext();
+  const isDark = theme === 'dark';
+  const styles = createStyles(isDark);
   const { ticketId } = route.params;
-  
+
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [formData, setFormData] = useState({
@@ -36,7 +40,7 @@ const EditTicketScreen = ({ route, navigation }) => {
   const loadTicketData = async () => {
     setLoading(true);
     const result = await getTicket(ticketId);
-    
+
     if (result.success) {
       setFormData({
         subject: result.data.subject || '',
@@ -122,6 +126,7 @@ const EditTicketScreen = ({ route, navigation }) => {
           <TextInput
             style={[styles.input, errors.subject && styles.inputError]}
             placeholder="Brief description of the issue"
+            placeholderTextColor={isDark ? "#aaa" : "#999"}
             value={formData.subject}
             onChangeText={(text) => setFormData({ ...formData, subject: text })}
             editable={!saving}
@@ -166,7 +171,7 @@ const EditTicketScreen = ({ route, navigation }) => {
         {/* Note about limitations */}
         <View style={styles.noteContainer}>
           <Text style={styles.noteText}>
-            ℹ️ Note: Only subject and priority can be modified. To add new information, 
+            ℹ️ Note: Only subject and priority can be modified. To add new information,
             reply to the ticket instead.
           </Text>
         </View>
@@ -197,10 +202,10 @@ const EditTicketScreen = ({ route, navigation }) => {
   );
 };
 
-const styles = StyleSheet.create({
+const createStyles = (isDark) => StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f5f5f5',
+    backgroundColor: isDark ? '#121212' : '#f5f5f5',
   },
   content: {
     padding: 16,
@@ -209,22 +214,22 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#f5f5f5',
+    backgroundColor: isDark ? '#121212' : '#f5f5f5',
   },
   loadingText: {
     marginTop: 12,
     fontSize: 16,
-    color: '#666',
+    color: isDark ? '#aaa' : '#666',
   },
   title: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: '#333',
+    color: isDark ? '#eee' : '#333',
     marginBottom: 4,
   },
   subtitle: {
     fontSize: 14,
-    color: '#666',
+    color: isDark ? '#aaa' : '#666',
     marginBottom: 24,
   },
   inputContainer: {
@@ -233,23 +238,23 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#333',
+    color: isDark ? '#eee' : '#333',
     marginBottom: 8,
   },
   input: {
-    backgroundColor: '#fff',
+    backgroundColor: isDark ? '#1e1e1e' : '#fff',
     borderWidth: 1,
-    borderColor: '#ddd',
+    borderColor: isDark ? '#333' : '#ddd',
     borderRadius: 8,
     padding: 12,
     fontSize: 16,
-    color: '#333',
+    color: isDark ? '#eee' : '#333',
   },
   inputError: {
     borderColor: '#d32f2f',
   },
   errorText: {
-    color: '#d32f2f',
+    color: isDark ? '#ff5252' : '#d32f2f',
     fontSize: 12,
     marginTop: 4,
   },
@@ -259,9 +264,9 @@ const styles = StyleSheet.create({
   },
   priorityButton: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: isDark ? '#1e1e1e' : '#fff',
     borderWidth: 1,
-    borderColor: '#ddd',
+    borderColor: isDark ? '#333' : '#ddd',
     borderRadius: 8,
     padding: 10,
     marginHorizontal: 4,
@@ -269,42 +274,42 @@ const styles = StyleSheet.create({
   },
   priorityButtonText: {
     fontSize: 12,
-    color: '#666',
+    color: isDark ? '#aaa' : '#666',
     fontWeight: '600',
   },
   priorityButtonTextActive: {
     color: '#fff',
   },
   noteContainer: {
-    backgroundColor: '#e3f2fd',
+    backgroundColor: isDark ? '#1b3a57' : '#e3f2fd',
     borderRadius: 8,
     padding: 12,
     marginBottom: 20,
   },
   noteText: {
     fontSize: 13,
-    color: '#1976d2',
+    color: isDark ? '#90caf9' : '#1976d2',
     lineHeight: 18,
   },
   saveButton: {
-    backgroundColor: '#1976d2',
+    backgroundColor: isDark ? '#90caf9' : '#1976d2',
     borderRadius: 8,
     padding: 16,
     alignItems: 'center',
     marginTop: 8,
   },
   saveButtonDisabled: {
-    backgroundColor: '#90caf9',
+    backgroundColor: isDark ? '#555' : '#90caf9',
   },
   saveButtonText: {
-    color: '#fff',
+    color: isDark ? '#121212' : '#fff',
     fontSize: 16,
     fontWeight: 'bold',
   },
   cancelButton: {
-    backgroundColor: '#fff',
+    backgroundColor: isDark ? '#1e1e1e' : '#fff',
     borderWidth: 1,
-    borderColor: '#ddd',
+    borderColor: isDark ? '#333' : '#ddd',
     borderRadius: 8,
     padding: 16,
     alignItems: 'center',
@@ -312,7 +317,7 @@ const styles = StyleSheet.create({
     marginBottom: 32,
   },
   cancelButtonText: {
-    color: '#666',
+    color: isDark ? '#aaa' : '#666',
     fontSize: 16,
     fontWeight: '600',
   },

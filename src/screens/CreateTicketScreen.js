@@ -1,24 +1,28 @@
 // src/screens/CreateTicketScreen.js
 // Create Ticket Screen with File Upload Support
 
-import React, { useState, useEffect } from 'react';
+import * as DocumentPicker from 'expo-document-picker';
+import * as ImagePicker from 'expo-image-picker';
+import { useEffect, useState } from 'react';
 import {
-  View,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  StyleSheet,
-  ScrollView,
   ActivityIndicator,
   Alert,
   Platform,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
 } from 'react-native';
-import { createTicket, getHelpTopics, uploadAttachment } from '../api/osticket';
-import * as DocumentPicker from 'expo-document-picker';
-import * as ImagePicker from 'expo-image-picker';
 import { APP_CONFIG, VALIDATION } from '../api/config';
+import { createTicket, getHelpTopics, uploadAttachment } from '../api/osticket';
+import { useThemeContext } from '../context/ThemeContext';
 
 const CreateTicketScreen = ({ navigation }) => {
+  const { theme } = useThemeContext();
+  const isDark = theme === 'dark';
+  const styles = createStyles(isDark);
   const [loading, setLoading] = useState(false);
   const [helpTopics, setHelpTopics] = useState([]);
   const [formData, setFormData] = useState({
@@ -43,7 +47,7 @@ const CreateTicketScreen = ({ navigation }) => {
     if (Platform.OS !== 'web') {
       const cameraStatus = await ImagePicker.requestCameraPermissionsAsync();
       const mediaStatus = await ImagePicker.requestMediaLibraryPermissionsAsync();
-      
+
       if (cameraStatus.status !== 'granted' || mediaStatus.status !== 'granted') {
         Alert.alert(
           'Permissions Required',
@@ -126,15 +130,15 @@ const CreateTicketScreen = ({ navigation }) => {
     try {
       const result = useCamera
         ? await ImagePicker.launchCameraAsync({
-            mediaTypes: ImagePicker.MediaTypeOptions.Images,
-            allowsEditing: true,
-            quality: 0.8,
-          })
+          mediaTypes: ImagePicker.MediaTypeOptions.Images,
+          allowsEditing: true,
+          quality: 0.8,
+        })
         : await ImagePicker.launchImageLibraryAsync({
-            mediaTypes: ImagePicker.MediaTypeOptions.Images,
-            allowsMultipleSelection: true,
-            quality: 0.8,
-          });
+          mediaTypes: ImagePicker.MediaTypeOptions.Images,
+          allowsMultipleSelection: true,
+          quality: 0.8,
+        });
 
       if (!result.canceled) {
         const newAttachments = result.assets.map(asset => ({
@@ -233,6 +237,7 @@ const CreateTicketScreen = ({ navigation }) => {
           <TextInput
             style={[styles.input, errors.name && styles.inputError]}
             placeholder="Your full name"
+            placeholderTextColor={isDark ? "#aaa" : "#999"}
             value={formData.name}
             onChangeText={(text) => setFormData({ ...formData, name: text })}
             editable={!loading}
@@ -246,6 +251,7 @@ const CreateTicketScreen = ({ navigation }) => {
           <TextInput
             style={[styles.input, errors.email && styles.inputError]}
             placeholder="your.email@example.com"
+            placeholderTextColor={isDark ? "#aaa" : "#999"}
             value={formData.email}
             onChangeText={(text) => setFormData({ ...formData, email: text })}
             keyboardType="email-address"
@@ -261,6 +267,7 @@ const CreateTicketScreen = ({ navigation }) => {
           <TextInput
             style={styles.input}
             placeholder="Your phone number (optional)"
+            placeholderTextColor={isDark ? "#aaa" : "#999"}
             value={formData.phone}
             onChangeText={(text) => setFormData({ ...formData, phone: text })}
             keyboardType="phone-pad"
@@ -321,6 +328,7 @@ const CreateTicketScreen = ({ navigation }) => {
           <TextInput
             style={[styles.input, errors.subject && styles.inputError]}
             placeholder="Brief description of the issue"
+            placeholderTextColor={isDark ? "#aaa" : "#999"}
             value={formData.subject}
             onChangeText={(text) => setFormData({ ...formData, subject: text })}
             editable={!loading}
@@ -334,6 +342,7 @@ const CreateTicketScreen = ({ navigation }) => {
           <TextInput
             style={[styles.textArea, errors.message && styles.inputError]}
             placeholder="Describe your issue in detail..."
+            placeholderTextColor={isDark ? "#aaa" : "#999"}
             value={formData.message}
             onChangeText={(text) => setFormData({ ...formData, message: text })}
             multiline
@@ -347,7 +356,7 @@ const CreateTicketScreen = ({ navigation }) => {
         {/* Attachments */}
         <View style={styles.inputContainer}>
           <Text style={styles.label}>Attachments</Text>
-          
+
           {attachments.map((file, index) => (
             <View key={index} style={styles.attachmentItem}>
               <Text style={styles.attachmentName} numberOfLines={1}>
@@ -388,10 +397,10 @@ const CreateTicketScreen = ({ navigation }) => {
   );
 };
 
-const styles = StyleSheet.create({
+const createStyles = (isDark) => StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f5f5f5',
+    backgroundColor: isDark ? '#121212' : '#f5f5f5',
   },
   content: {
     padding: 16,
@@ -399,7 +408,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: '#333',
+    color: isDark ? '#eee' : '#333',
     marginBottom: 24,
   },
   inputContainer: {
@@ -408,46 +417,46 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#333',
+    color: isDark ? '#ddd' : '#333',
     marginBottom: 8,
   },
   input: {
-    backgroundColor: '#fff',
+    backgroundColor: isDark ? '#1e1e1e' : '#fff',
     borderWidth: 1,
-    borderColor: '#ddd',
+    borderColor: isDark ? '#333' : '#ddd',
     borderRadius: 8,
     padding: 12,
     fontSize: 16,
-    color: '#333',
+    color: isDark ? '#eee' : '#333',
   },
   inputError: {
     borderColor: '#d32f2f',
   },
   errorText: {
-    color: '#d32f2f',
+    color: isDark ? '#ff5252' : '#d32f2f',
     fontSize: 12,
     marginTop: 4,
   },
   textArea: {
-    backgroundColor: '#fff',
+    backgroundColor: isDark ? '#1e1e1e' : '#fff',
     borderWidth: 1,
-    borderColor: '#ddd',
+    borderColor: isDark ? '#333' : '#ddd',
     borderRadius: 8,
     padding: 12,
     fontSize: 16,
-    color: '#333',
+    color: isDark ? '#eee' : '#333',
     minHeight: 120,
   },
   pickerContainer: {
-    backgroundColor: '#fff',
+    backgroundColor: isDark ? '#1e1e1e' : '#fff',
     borderWidth: 1,
-    borderColor: '#ddd',
+    borderColor: isDark ? '#333' : '#ddd',
     borderRadius: 8,
     padding: 12,
   },
   pickerText: {
     fontSize: 16,
-    color: '#333',
+    color: isDark ? '#eee' : '#333',
   },
   priorityButtons: {
     flexDirection: 'row',
@@ -455,9 +464,9 @@ const styles = StyleSheet.create({
   },
   priorityButton: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: isDark ? '#1e1e1e' : '#fff',
     borderWidth: 1,
-    borderColor: '#ddd',
+    borderColor: isDark ? '#333' : '#ddd',
     borderRadius: 8,
     padding: 10,
     marginHorizontal: 4,
@@ -465,7 +474,7 @@ const styles = StyleSheet.create({
   },
   priorityButtonText: {
     fontSize: 12,
-    color: '#666',
+    color: isDark ? '#aaa' : '#666',
     fontWeight: '600',
   },
   priorityButtonTextActive: {
@@ -475,9 +484,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    backgroundColor: '#fff',
+    backgroundColor: isDark ? '#1e1e1e' : '#fff',
     borderWidth: 1,
-    borderColor: '#ddd',
+    borderColor: isDark ? '#333' : '#ddd',
     borderRadius: 8,
     padding: 12,
     marginBottom: 8,
@@ -485,29 +494,29 @@ const styles = StyleSheet.create({
   attachmentName: {
     flex: 1,
     fontSize: 14,
-    color: '#333',
+    color: isDark ? '#eee' : '#333',
   },
   removeButton: {
-    color: '#d32f2f',
+    color: isDark ? '#ff5252' : '#d32f2f',
     fontSize: 14,
     fontWeight: '600',
   },
   attachButton: {
-    backgroundColor: '#fff',
+    backgroundColor: isDark ? '#1e1e1e' : '#fff',
     borderWidth: 1,
-    borderColor: '#1976d2',
+    borderColor: isDark ? '#90caf9' : '#1976d2',
     borderRadius: 8,
     borderStyle: 'dashed',
     padding: 12,
     alignItems: 'center',
   },
   attachButtonText: {
-    color: '#1976d2',
+    color: isDark ? '#90caf9' : '#1976d2',
     fontSize: 14,
     fontWeight: '600',
   },
   submitButton: {
-    backgroundColor: '#1976d2',
+    backgroundColor: isDark ? '#90caf9' : '#1976d2',
     borderRadius: 8,
     padding: 16,
     alignItems: 'center',
@@ -515,10 +524,10 @@ const styles = StyleSheet.create({
     marginBottom: 32,
   },
   submitButtonDisabled: {
-    backgroundColor: '#90caf9',
+    backgroundColor: isDark ? '#555' : '#90caf9',
   },
   submitButtonText: {
-    color: '#fff',
+    color: isDark ? '#121212' : '#fff',
     fontSize: 16,
     fontWeight: 'bold',
   },

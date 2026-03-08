@@ -12,6 +12,7 @@ import {
     View,
 } from 'react-native';
 import { API_BASE_URL } from '../api/config';
+import { useThemeContext } from '../context/ThemeContext';
 
 // API_BASE_URL already ends with /api, e.g. "http://192.168.1.8:3000/api"
 // So admin routes are: API_BASE_URL + "/admin/tickets"
@@ -23,8 +24,10 @@ const PRIORITY_OPTIONS = [
     { label: 'High', value: 3 },
     { label: 'Critical', value: 4 },
 ];
-
 const AdminPanelScreen = ({ navigation }) => {
+    const { theme } = useThemeContext();
+    const isDark = theme === 'dark';
+    const styles = createStyles(isDark);
     const [tickets, setTickets] = useState([]);
     const [loading, setLoading] = useState(true);
     const [refreshing, setRefreshing] = useState(false);
@@ -168,13 +171,13 @@ const AdminPanelScreen = ({ navigation }) => {
     );
 };
 
-const styles = StyleSheet.create({
-    container: { flex: 1, backgroundColor: '#f5f5f5', padding: 16 },
+const createStyles = (isDark) => StyleSheet.create({
+    container: { flex: 1, backgroundColor: isDark ? '#121212' : '#f5f5f5', padding: 16 },
     centered: { flex: 1, justifyContent: 'center', alignItems: 'center' },
-    subtitle: { fontSize: 13, color: '#888', marginBottom: 12 },
-    loadingText: { marginTop: 12, fontSize: 16, color: '#666' },
-    errorText: { fontSize: 16, color: '#c62828', textAlign: 'center', marginBottom: 16 },
-    emptyText: { fontSize: 16, color: '#999' },
+    subtitle: { fontSize: 13, color: isDark ? '#aaa' : '#888', marginBottom: 12 },
+    loadingText: { marginTop: 12, fontSize: 16, color: isDark ? '#aaa' : '#666' },
+    errorText: { fontSize: 16, color: isDark ? '#ff5252' : '#c62828', textAlign: 'center', marginBottom: 16 },
+    emptyText: { fontSize: 16, color: isDark ? '#888' : '#999' },
     retryBtn: {
         backgroundColor: '#e65100',
         paddingHorizontal: 24,
@@ -184,7 +187,7 @@ const styles = StyleSheet.create({
     retryBtnText: { color: '#fff', fontWeight: '600' },
     listContent: { paddingBottom: 24 },
     card: {
-        backgroundColor: '#fff',
+        backgroundColor: isDark ? '#1e1e1e' : '#fff',
         borderRadius: 10,
         padding: 14,
         marginBottom: 12,
@@ -200,7 +203,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         marginBottom: 6,
     },
-    ticketNum: { fontSize: 12, color: '#888' },
+    ticketNum: { fontSize: 12, color: isDark ? '#aaa' : '#888' },
     statusBadge: {
         backgroundColor: '#e65100',
         paddingHorizontal: 10,
@@ -208,8 +211,8 @@ const styles = StyleSheet.create({
         borderRadius: 12,
     },
     statusText: { color: '#fff', fontSize: 12, fontWeight: '600' },
-    subject: { fontSize: 15, fontWeight: '600', color: '#333', marginBottom: 6 },
-    meta: { fontSize: 12, color: '#777' },
+    subject: { fontSize: 15, fontWeight: '600', color: isDark ? '#eee' : '#333', marginBottom: 6 },
+    meta: { fontSize: 12, color: isDark ? '#aaa' : '#777' },
 });
 
 export default AdminPanelScreen;

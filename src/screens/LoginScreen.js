@@ -1,23 +1,26 @@
 // src/screens/LoginScreen.js
 // Login Screen Component
 
-import React, { useState } from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useState } from 'react';
 import {
-  View,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  StyleSheet,
   ActivityIndicator,
   Alert,
   KeyboardAvoidingView,
   Platform,
-  Image,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View
 } from 'react-native';
 import { login } from '../api/osticket';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useThemeContext } from '../context/ThemeContext';
 
 const LoginScreen = ({ navigation }) => {
+  const { theme } = useThemeContext();
+  const isDark = theme === 'dark';
+  const styles = createStyles(isDark);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
@@ -98,7 +101,7 @@ const LoginScreen = ({ navigation }) => {
             <TextInput
               style={[styles.input, errors.email && styles.inputError]}
               placeholder="Enter your email"
-              placeholderTextColor="#999"
+              placeholderTextColor={isDark ? "#aaa" : "#999"}
               value={email}
               onChangeText={(text) => {
                 setEmail(text);
@@ -122,7 +125,7 @@ const LoginScreen = ({ navigation }) => {
             <TextInput
               style={[styles.input, errors.password && styles.inputError]}
               placeholder="Enter your password"
-              placeholderTextColor="#999"
+              placeholderTextColor={isDark ? "#aaa" : "#999"}
               value={password}
               onChangeText={(text) => {
                 setPassword(text);
@@ -165,7 +168,7 @@ const LoginScreen = ({ navigation }) => {
         {/* Footer */}
         <View style={styles.footer}>
           <Text style={styles.footerText}>
-            Don't have an account?{' '}
+            Don&apos;t have an account?{' '}
             <Text
               style={styles.signupLink}
               onPress={() => navigation.navigate('Signup')}
@@ -179,10 +182,10 @@ const LoginScreen = ({ navigation }) => {
   );
 };
 
-const styles = StyleSheet.create({
+const createStyles = (isDark) => StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f5f5f5',
+    backgroundColor: isDark ? '#121212' : '#f5f5f5',
   },
   content: {
     flex: 1,
@@ -196,12 +199,12 @@ const styles = StyleSheet.create({
   appName: {
     fontSize: 36,
     fontWeight: 'bold',
-    color: '#1976d2',
+    color: isDark ? '#90caf9' : '#1976d2',
     marginBottom: 8,
   },
   subtitle: {
     fontSize: 16,
-    color: '#666',
+    color: isDark ? '#aaa' : '#666',
   },
   form: {
     width: '100%',
@@ -212,28 +215,28 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#333',
+    color: isDark ? '#ddd' : '#333',
     marginBottom: 8,
   },
   input: {
-    backgroundColor: '#fff',
+    backgroundColor: isDark ? '#1e1e1e' : '#fff',
     borderWidth: 1,
-    borderColor: '#ddd',
+    borderColor: isDark ? '#333' : '#ddd',
     borderRadius: 8,
     padding: 16,
     fontSize: 16,
-    color: '#333',
+    color: isDark ? '#eee' : '#333',
   },
   inputError: {
     borderColor: '#d32f2f',
   },
   errorText: {
-    color: '#d32f2f',
+    color: isDark ? '#ff5252' : '#d32f2f',
     fontSize: 12,
     marginTop: 4,
   },
   loginButton: {
-    backgroundColor: '#1976d2',
+    backgroundColor: isDark ? '#90caf9' : '#1976d2',
     borderRadius: 8,
     padding: 16,
     alignItems: 'center',
@@ -245,10 +248,10 @@ const styles = StyleSheet.create({
     elevation: 3,
   },
   loginButtonDisabled: {
-    backgroundColor: '#90caf9',
+    backgroundColor: isDark ? '#555' : '#90caf9',
   },
   loginButtonText: {
-    color: '#fff',
+    color: isDark ? '#121212' : '#fff',
     fontSize: 16,
     fontWeight: 'bold',
   },
@@ -257,7 +260,7 @@ const styles = StyleSheet.create({
     marginTop: 16,
   },
   forgotPasswordText: {
-    color: '#1976d2',
+    color: isDark ? '#90caf9' : '#1976d2',
     fontSize: 14,
   },
   footer: {
@@ -265,11 +268,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   footerText: {
-    color: '#666',
+    color: isDark ? '#aaa' : '#666',
     fontSize: 14,
   },
   signupLink: {
-    color: '#1976d2',
+    color: isDark ? '#90caf9' : '#1976d2',
     fontWeight: '600',
   },
 });

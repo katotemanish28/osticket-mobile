@@ -17,8 +17,12 @@ import {
     View,
 } from 'react-native';
 import { API_BASE_URL, PRIORITY_COLORS, PRIORITY_LABELS, STATUS_COLORS } from '../api/config';
+import { useThemeContext } from '../context/ThemeContext';
 
 const AdminTicketDetailScreen = ({ route, navigation }) => {
+    const { theme } = useThemeContext();
+    const isDark = theme === 'dark';
+    const styles = createStyles(isDark);
     const { ticketId } = route.params;
 
     const [loading, setLoading] = useState(true);
@@ -297,7 +301,7 @@ const AdminTicketDetailScreen = ({ route, navigation }) => {
                 <TextInput
                     style={styles.replyInput}
                     placeholder="Reply as admin..."
-                    placeholderTextColor="#999"
+                    placeholderTextColor={isDark ? "#aaa" : "#999"}
                     value={replyText}
                     onChangeText={setReplyText}
                     multiline
@@ -323,63 +327,63 @@ const AdminTicketDetailScreen = ({ route, navigation }) => {
     );
 };
 
-const styles = StyleSheet.create({
+const createStyles = (isDark) => StyleSheet.create({
     flex: { flex: 1 },
-    container: { flex: 1, backgroundColor: '#f5f5f5' },
+    container: { flex: 1, backgroundColor: isDark ? '#121212' : '#f5f5f5' },
     scrollContent: { paddingBottom: 16 },
     content: { padding: 16 },
-    loadingContainer: { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#f5f5f5' },
-    loadingText: { marginTop: 12, fontSize: 16, color: '#666' },
-    errorContainer: { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#f5f5f5' },
+    loadingContainer: { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: isDark ? '#121212' : '#f5f5f5' },
+    loadingText: { marginTop: 12, fontSize: 16, color: isDark ? '#aaa' : '#666' },
+    errorContainer: { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: isDark ? '#121212' : '#f5f5f5' },
     errorText: { fontSize: 16, color: '#d32f2f' },
     header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 },
     ticketNumber: { fontSize: 18, fontWeight: 'bold', color: '#e65100' },
     badges: { flexDirection: 'row', gap: 8 },
     badge: { paddingHorizontal: 12, paddingVertical: 4, borderRadius: 12 },
     badgeText: { color: '#fff', fontSize: 11, fontWeight: 'bold' },
-    subject: { fontSize: 20, fontWeight: 'bold', color: '#333', marginBottom: 16 },
-    metadataContainer: { backgroundColor: '#fff', borderRadius: 8, padding: 16, marginBottom: 16 },
+    subject: { fontSize: 20, fontWeight: 'bold', color: isDark ? '#eee' : '#333', marginBottom: 16 },
+    metadataContainer: { backgroundColor: isDark ? '#1e1e1e' : '#fff', borderRadius: 8, padding: 16, marginBottom: 16 },
     metadataRow: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 8 },
-    metadataLabel: { fontSize: 14, color: '#666', fontWeight: '600' },
-    metadataValue: { fontSize: 14, color: '#333' },
-    messageContainer: { backgroundColor: '#fff', borderRadius: 8, padding: 16, marginBottom: 16 },
-    messageLabel: { fontSize: 14, fontWeight: '600', color: '#666', marginBottom: 8 },
-    messageText: { fontSize: 15, color: '#333', lineHeight: 22 },
+    metadataLabel: { fontSize: 14, color: isDark ? '#aaa' : '#666', fontWeight: '600' },
+    metadataValue: { fontSize: 14, color: isDark ? '#eee' : '#333' },
+    messageContainer: { backgroundColor: isDark ? '#1e1e1e' : '#fff', borderRadius: 8, padding: 16, marginBottom: 16 },
+    messageLabel: { fontSize: 14, fontWeight: '600', color: isDark ? '#aaa' : '#666', marginBottom: 8 },
+    messageText: { fontSize: 15, color: isDark ? '#eee' : '#333', lineHeight: 22 },
 
     // Reply Section
-    replySection: { backgroundColor: '#fff', borderRadius: 12, padding: 16, marginBottom: 8 },
-    replySectionHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16, borderBottomWidth: 1, borderBottomColor: '#eee', paddingBottom: 12 },
-    replySectionTitle: { fontSize: 17, fontWeight: 'bold', color: '#333' },
-    refreshBtn: { paddingVertical: 4, paddingHorizontal: 10, backgroundColor: '#fff3e0', borderRadius: 16 },
-    refreshBtnText: { color: '#e65100', fontSize: 13, fontWeight: '600' },
+    replySection: { backgroundColor: isDark ? '#1e1e1e' : '#fff', borderRadius: 12, padding: 16, marginBottom: 8 },
+    replySectionHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16, borderBottomWidth: 1, borderBottomColor: isDark ? '#333' : '#eee', paddingBottom: 12 },
+    replySectionTitle: { fontSize: 17, fontWeight: 'bold', color: isDark ? '#eee' : '#333' },
+    refreshBtn: { paddingVertical: 4, paddingHorizontal: 10, backgroundColor: isDark ? '#4e342e' : '#fff3e0', borderRadius: 16 },
+    refreshBtnText: { color: isDark ? '#ffcc80' : '#e65100', fontSize: 13, fontWeight: '600' },
     repliesLoadingContainer: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', paddingVertical: 24, gap: 8 },
-    repliesLoadingText: { color: '#888', fontSize: 14 },
+    repliesLoadingText: { color: isDark ? '#aaa' : '#888', fontSize: 14 },
     emptyReplies: { alignItems: 'center', paddingVertical: 24 },
     emptyRepliesIcon: { fontSize: 32, marginBottom: 8 },
-    emptyRepliesText: { fontSize: 15, color: '#999', fontWeight: '600' },
-    emptyRepliesSubtext: { fontSize: 13, color: '#bbb', marginTop: 4 },
+    emptyRepliesText: { fontSize: 15, color: isDark ? '#888' : '#999', fontWeight: '600' },
+    emptyRepliesSubtext: { fontSize: 13, color: isDark ? '#aaa' : '#bbb', marginTop: 4 },
     repliesList: { gap: 10 },
     replyBubbleRow: { flexDirection: 'row', marginBottom: 2 },
     replyBubbleRowRight: { justifyContent: 'flex-end' },
     replyBubbleRowLeft: { justifyContent: 'flex-start' },
     replyBubble: { maxWidth: '80%', borderRadius: 16, paddingHorizontal: 14, paddingVertical: 10 },
     replyBubbleStaff: { backgroundColor: '#e65100', borderBottomRightRadius: 4 },
-    replyBubbleUser: { backgroundColor: '#f0f0f0', borderBottomLeftRadius: 4 },
+    replyBubbleUser: { backgroundColor: isDark ? '#333' : '#f0f0f0', borderBottomLeftRadius: 4 },
     replySenderName: { fontSize: 12, fontWeight: 'bold', marginBottom: 3 },
     staffName: { color: 'rgba(255,255,255,0.8)' },
-    userName: { color: '#1976d2' },
+    userName: { color: isDark ? '#90caf9' : '#1976d2' },
     replyMessageText: { fontSize: 15, lineHeight: 20 },
     replyMessageTextStaff: { color: '#fff' },
-    replyMessageTextUser: { color: '#333' },
+    replyMessageTextUser: { color: isDark ? '#eee' : '#333' },
     replyTime: { fontSize: 11, marginTop: 4 },
     replyTimeStaff: { color: 'rgba(255,255,255,0.7)', textAlign: 'right' },
-    replyTimeUser: { color: '#999' },
+    replyTimeUser: { color: isDark ? '#aaa' : '#999' },
 
     // Reply Input Bar
-    replyInputBar: { flexDirection: 'row', alignItems: 'flex-end', paddingHorizontal: 12, paddingVertical: 8, backgroundColor: '#fff', borderTopWidth: 1, borderTopColor: '#e0e0e0', gap: 8 },
-    replyInput: { flex: 1, minHeight: 40, maxHeight: 100, borderWidth: 1, borderColor: '#ddd', borderRadius: 20, paddingHorizontal: 16, paddingVertical: 10, fontSize: 15, color: '#333', backgroundColor: '#f9f9f9' },
+    replyInputBar: { flexDirection: 'row', alignItems: 'flex-end', paddingHorizontal: 12, paddingVertical: 8, backgroundColor: isDark ? '#1e1e1e' : '#fff', borderTopWidth: 1, borderTopColor: isDark ? '#333' : '#e0e0e0', gap: 8 },
+    replyInput: { flex: 1, minHeight: 40, maxHeight: 100, borderWidth: 1, borderColor: isDark ? '#333' : '#ddd', borderRadius: 20, paddingHorizontal: 16, paddingVertical: 10, fontSize: 15, color: isDark ? '#eee' : '#333', backgroundColor: isDark ? '#2c2c2c' : '#f9f9f9' },
     sendButton: { backgroundColor: '#e65100', borderRadius: 20, paddingHorizontal: 20, paddingVertical: 10, justifyContent: 'center', alignItems: 'center', minHeight: 40 },
-    sendButtonDisabled: { backgroundColor: '#b0bec5' },
+    sendButtonDisabled: { backgroundColor: isDark ? '#555' : '#b0bec5' },
     sendButtonText: { color: '#fff', fontSize: 15, fontWeight: 'bold' },
 });
 

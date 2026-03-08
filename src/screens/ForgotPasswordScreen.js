@@ -1,22 +1,26 @@
 // src/screens/ForgotPasswordScreen.js
 // Three-step forgot password: email → OTP verification → set new password
 
-import React, { useState, useRef } from 'react';
+import { useRef, useState } from 'react';
 import {
-  View,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  StyleSheet,
   ActivityIndicator,
   Alert,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
 } from 'react-native';
-import { forgotPassword, verifyOtp, resetPassword } from '../api/osticket';
+import { forgotPassword, resetPassword, verifyOtp } from '../api/osticket';
+import { useThemeContext } from '../context/ThemeContext';
 
 const ForgotPasswordScreen = ({ navigation }) => {
+  const { theme } = useThemeContext();
+  const isDark = theme === 'dark';
+  const styles = createStyles(isDark);
   const [step, setStep] = useState(1); // 1: email, 2: OTP, 3: new password
   const [email, setEmail] = useState('');
   const [userName, setUserName] = useState('');
@@ -187,7 +191,7 @@ const ForgotPasswordScreen = ({ navigation }) => {
                 <TextInput
                   style={[styles.input, errors.email && styles.inputError]}
                   placeholder="Enter your registered email"
-                  placeholderTextColor="#999"
+                  placeholderTextColor={isDark ? "#aaa" : "#999"}
                   value={email}
                   onChangeText={(text) => {
                     setEmail(text);
@@ -228,7 +232,7 @@ const ForgotPasswordScreen = ({ navigation }) => {
                   ref={otpInputRef}
                   style={[styles.input, styles.otpInput, errors.otp && styles.inputError]}
                   placeholder="000000"
-                  placeholderTextColor="#ccc"
+                  placeholderTextColor={isDark ? "#555" : "#ccc"}
                   value={otp}
                   onChangeText={(text) => {
                     const digits = text.replace(/[^0-9]/g, '').slice(0, 6);
@@ -286,7 +290,7 @@ const ForgotPasswordScreen = ({ navigation }) => {
                 <TextInput
                   style={[styles.input, errors.newPassword && styles.inputError]}
                   placeholder="Enter new password (min 6 chars)"
-                  placeholderTextColor="#999"
+                  placeholderTextColor={isDark ? "#aaa" : "#999"}
                   value={newPassword}
                   onChangeText={(text) => {
                     setNewPassword(text);
@@ -304,7 +308,7 @@ const ForgotPasswordScreen = ({ navigation }) => {
                 <TextInput
                   style={[styles.input, errors.confirmPassword && styles.inputError]}
                   placeholder="Re-enter new password"
-                  placeholderTextColor="#999"
+                  placeholderTextColor={isDark ? "#aaa" : "#999"}
                   value={confirmPassword}
                   onChangeText={(text) => {
                     setConfirmPassword(text);
@@ -344,53 +348,53 @@ const ForgotPasswordScreen = ({ navigation }) => {
   );
 };
 
-const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#f5f5f5' },
+const createStyles = (isDark) => StyleSheet.create({
+  container: { flex: 1, backgroundColor: isDark ? '#121212' : '#f5f5f5' },
   scrollContent: { flexGrow: 1, justifyContent: 'center' },
   content: { padding: 24 },
   header: { alignItems: 'center', marginBottom: 24 },
   icon: { fontSize: 48, marginBottom: 12 },
-  title: { fontSize: 24, fontWeight: 'bold', color: '#333', marginBottom: 8 },
-  subtitle: { fontSize: 14, color: '#888', textAlign: 'center', lineHeight: 20 },
+  title: { fontSize: 24, fontWeight: 'bold', color: isDark ? '#eee' : '#333', marginBottom: 8 },
+  subtitle: { fontSize: 14, color: isDark ? '#aaa' : '#888', textAlign: 'center', lineHeight: 20 },
 
   // Step Indicator
   stepIndicator: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', marginBottom: 8 },
-  stepDot: { width: 12, height: 12, borderRadius: 6, backgroundColor: '#ddd' },
-  stepDotActive: { backgroundColor: '#1976d2' },
-  stepLine: { width: 32, height: 3, backgroundColor: '#ddd', marginHorizontal: 6 },
-  stepLineActive: { backgroundColor: '#1976d2' },
+  stepDot: { width: 12, height: 12, borderRadius: 6, backgroundColor: isDark ? '#333' : '#ddd' },
+  stepDotActive: { backgroundColor: isDark ? '#90caf9' : '#1976d2' },
+  stepLine: { width: 32, height: 3, backgroundColor: isDark ? '#333' : '#ddd', marginHorizontal: 6 },
+  stepLineActive: { backgroundColor: isDark ? '#90caf9' : '#1976d2' },
   stepLabels: { flexDirection: 'row', justifyContent: 'center', marginBottom: 28, gap: 40 },
-  stepLabel: { fontSize: 12, color: '#bbb', fontWeight: '600' },
-  stepLabelActive: { color: '#1976d2' },
+  stepLabel: { fontSize: 12, color: isDark ? '#666' : '#bbb', fontWeight: '600' },
+  stepLabelActive: { color: isDark ? '#90caf9' : '#1976d2' },
 
   // Form
   form: { width: '100%' },
-  emailConfirmBadge: { backgroundColor: '#e8f5e9', borderRadius: 8, padding: 12, marginBottom: 20, alignItems: 'center' },
-  emailConfirmText: { color: '#2e7d32', fontSize: 14, fontWeight: '600' },
+  emailConfirmBadge: { backgroundColor: isDark ? '#1b5e20' : '#e8f5e9', borderRadius: 8, padding: 12, marginBottom: 20, alignItems: 'center' },
+  emailConfirmText: { color: isDark ? '#81c784' : '#2e7d32', fontSize: 14, fontWeight: '600' },
   inputContainer: { marginBottom: 20 },
-  label: { fontSize: 14, fontWeight: '600', color: '#333', marginBottom: 8 },
-  input: { backgroundColor: '#fff', borderWidth: 1, borderColor: '#ddd', borderRadius: 8, padding: 16, fontSize: 16, color: '#333' },
+  label: { fontSize: 14, fontWeight: '600', color: isDark ? '#ddd' : '#333', marginBottom: 8 },
+  input: { backgroundColor: isDark ? '#1e1e1e' : '#fff', borderWidth: 1, borderColor: isDark ? '#333' : '#ddd', borderRadius: 8, padding: 16, fontSize: 16, color: isDark ? '#eee' : '#333' },
   inputError: { borderColor: '#d32f2f' },
-  otpInput: { textAlign: 'center', fontSize: 28, fontWeight: 'bold', letterSpacing: 12, paddingVertical: 18 },
-  errorText: { color: '#d32f2f', fontSize: 12, marginTop: 4 },
+  otpInput: { textAlign: 'center', fontSize: 28, fontWeight: 'bold', letterSpacing: 12, paddingVertical: 18, color: isDark ? '#eee' : '#333' },
+  errorText: { color: isDark ? '#ff5252' : '#d32f2f', fontSize: 12, marginTop: 4 },
   button: {
-    backgroundColor: '#1976d2', borderRadius: 8, padding: 16, alignItems: 'center', marginTop: 8,
+    backgroundColor: isDark ? '#90caf9' : '#1976d2', borderRadius: 8, padding: 16, alignItems: 'center', marginTop: 8,
     shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.1, shadowRadius: 4, elevation: 3,
   },
-  buttonDisabled: { backgroundColor: '#90caf9' },
-  buttonText: { color: '#fff', fontSize: 16, fontWeight: 'bold' },
+  buttonDisabled: { backgroundColor: isDark ? '#555' : '#90caf9' },
+  buttonText: { color: isDark ? '#121212' : '#fff', fontSize: 16, fontWeight: 'bold' },
 
   // Resend OTP
   resendBtn: { alignItems: 'center', marginTop: 16, padding: 8 },
   resendBtnDisabled: { opacity: 0.5 },
-  resendText: { color: '#1976d2', fontSize: 14, fontWeight: '600' },
-  resendTextDisabled: { color: '#999' },
+  resendText: { color: isDark ? '#90caf9' : '#1976d2', fontSize: 14, fontWeight: '600' },
+  resendTextDisabled: { color: isDark ? '#555' : '#999' },
 
   // Links
   backLink: { alignItems: 'center', marginTop: 12 },
-  backLinkText: { color: '#1976d2', fontSize: 14 },
+  backLinkText: { color: isDark ? '#90caf9' : '#1976d2', fontSize: 14 },
   loginLink: { alignItems: 'center', marginTop: 32 },
-  loginLinkText: { color: '#666', fontSize: 14 },
+  loginLinkText: { color: isDark ? '#aaa' : '#666', fontSize: 14 },
 });
 
 export default ForgotPasswordScreen;

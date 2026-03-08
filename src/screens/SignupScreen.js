@@ -1,20 +1,24 @@
-import React, { useState } from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useState } from 'react';
 import {
-    View,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    StyleSheet,
     ActivityIndicator,
     Alert,
     KeyboardAvoidingView,
     Platform,
     ScrollView,
+    StyleSheet,
+    Text,
+    TextInput,
+    TouchableOpacity,
+    View,
 } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { register } from '../api/osticket';
+import { useThemeContext } from '../context/ThemeContext';
 
 const SignupScreen = ({ navigation }) => {
+    const { theme } = useThemeContext();
+    const isDark = theme === 'dark';
+    const styles = createStyles(isDark);
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -69,7 +73,7 @@ const SignupScreen = ({ navigation }) => {
             <TextInput
                 style={[styles.input, errors[key] && styles.inputError]}
                 placeholder={`Enter your ${label.toLowerCase()}`}
-                placeholderTextColor="#999"
+                placeholderTextColor={isDark ? "#aaa" : "#999"}
                 value={value}
                 onChangeText={(text) => {
                     setter(text);
@@ -124,28 +128,28 @@ const SignupScreen = ({ navigation }) => {
     );
 };
 
-const styles = StyleSheet.create({
-    container: { flex: 1, backgroundColor: '#f5f5f5' },
+const createStyles = (isDark) => StyleSheet.create({
+    container: { flex: 1, backgroundColor: isDark ? '#121212' : '#f5f5f5' },
     content: { flexGrow: 1, padding: 24, justifyContent: 'center' },
     header: { alignItems: 'center', marginBottom: 36 },
-    appName: { fontSize: 36, fontWeight: 'bold', color: '#1976d2', marginBottom: 8 },
-    subtitle: { fontSize: 16, color: '#666' },
+    appName: { fontSize: 36, fontWeight: 'bold', color: isDark ? '#90caf9' : '#1976d2', marginBottom: 8 },
+    subtitle: { fontSize: 16, color: isDark ? '#aaa' : '#666' },
     form: { width: '100%' },
     inputContainer: { marginBottom: 18 },
-    label: { fontSize: 14, fontWeight: '600', color: '#333', marginBottom: 8 },
+    label: { fontSize: 14, fontWeight: '600', color: isDark ? '#ddd' : '#333', marginBottom: 8 },
     input: {
-        backgroundColor: '#fff',
+        backgroundColor: isDark ? '#1e1e1e' : '#fff',
         borderWidth: 1,
-        borderColor: '#ddd',
+        borderColor: isDark ? '#333' : '#ddd',
         borderRadius: 8,
         padding: 16,
         fontSize: 16,
-        color: '#333',
+        color: isDark ? '#eee' : '#333',
     },
     inputError: { borderColor: '#d32f2f' },
-    errorText: { color: '#d32f2f', fontSize: 12, marginTop: 4 },
+    errorText: { color: isDark ? '#ff5252' : '#d32f2f', fontSize: 12, marginTop: 4 },
     registerButton: {
-        backgroundColor: '#1976d2',
+        backgroundColor: isDark ? '#90caf9' : '#1976d2',
         borderRadius: 8,
         padding: 16,
         alignItems: 'center',
@@ -156,11 +160,11 @@ const styles = StyleSheet.create({
         shadowRadius: 4,
         elevation: 3,
     },
-    registerButtonDisabled: { backgroundColor: '#90caf9' },
-    registerButtonText: { color: '#fff', fontSize: 16, fontWeight: 'bold' },
+    registerButtonDisabled: { backgroundColor: isDark ? '#555' : '#90caf9' },
+    registerButtonText: { color: isDark ? '#121212' : '#fff', fontSize: 16, fontWeight: 'bold' },
     footer: { marginTop: 28, alignItems: 'center' },
-    footerText: { color: '#666', fontSize: 14 },
-    loginLink: { color: '#1976d2', fontWeight: '600' },
+    footerText: { color: isDark ? '#aaa' : '#666', fontSize: 14 },
+    loginLink: { color: isDark ? '#90caf9' : '#1976d2', fontWeight: '600' },
 });
 
 export default SignupScreen;

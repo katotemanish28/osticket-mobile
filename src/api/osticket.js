@@ -38,6 +38,8 @@ const api = axios.create({
 });
 
 // Add request interceptor for auth tokens
+let cachedToken = null;
+
 api.interceptors.request.use(
   async (config) => {
     // Get stored auth token if available
@@ -74,8 +76,10 @@ api.interceptors.response.use(
 
 // Helper function to get stored auth token
 const getAuthToken = async () => {
+  if (cachedToken) return cachedToken;
   try {
     const token = await AsyncStorage.getItem("authToken");
+    if (token) cachedToken = token;
     return token;
   } catch (error) {
     console.error("Error getting auth token:", error);
@@ -87,6 +91,7 @@ const getAuthToken = async () => {
 const handleUnauthorized = () => {
   // Clear stored credentials and redirect to login
   // This will be implemented in your navigation logic
+  cachedToken = null;
   console.log("User unauthorized - redirect to login");
 };
 
@@ -102,6 +107,7 @@ export const login = async (email, password) => {
   }
   try {
     const response = await api.post("/auth/login", { email, password });
+    cachedToken = response.data.token;
     return {
       success: true,
       data: response.data.data,
@@ -194,6 +200,7 @@ export const logout = async () => {
   try {
     await api.post("/auth/logout");
     // Clear local storage
+    cachedToken = null;
     return { success: true };
   } catch (error) {
     return {
@@ -410,23 +417,22 @@ export const searchTickets = async (query, filters = {}) => {
     const params = {
       q: query,
       status: filters.status || "all",
-      priority: filters.priority || "",
-      department: filters.department || "",
-      dateFrom: filters.dateFrom || "",
-      dateTo: filters.dateTo || "",
     };
 
     const response = await api.get("/tickets/search", { params });
 
     return {
       success: true,
-      data: response.data.results || response.data,
+      tickets: response.data.tickets || [],
+      total: response.data.total || 0,
+      page: response.data.page || 1,
     };
   } catch (error) {
     return {
       success: false,
       error: error.response?.data?.message || "Search failed",
-      data: [],
+      tickets: [],
+      total: 0,
     };
   }
 };
@@ -655,8 +661,32 @@ export const updateTicketPriority = async (ticketId, priority) => {
 // ==================== EXPORT ALL FUNCTIONS ====================
 // Make sure to add these to your default export at the bottom:
 
+/**
+ * Change password (logged-in user)
+ * @param {string} currentPassword
+ * @param {string} newPassword
+ */
+export const changePassword = async (currentPassword, newPassword) => {
+  try {
+    const response = await api.post("/auth/change-password", { currentPassword, newPassword });
+    return {
+      success: true,
+      message: response.data.message,
+    };
+  } catch (error) {
+    return {
+      success: false,
+      error: error.response?.data?.message || "Failed to change password",
+    };
+  }
+};
+
 export default {
   login,
+  register,
+  forgotPassword,
+  verifyOtp,
+  resetPassword,
   logout,
   createTicket,
   getTicket,
@@ -672,5 +702,6 @@ export default {
   deleteTicket,
   updateTicketStatus,
   updateTicketPriority,
+  changePassword,
 };
 

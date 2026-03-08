@@ -1,26 +1,31 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { NavigationContainer } from "@react-navigation/native";
+import { DarkTheme, DefaultTheme, NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ActivityIndicator, View } from "react-native";
+import { ThemeProvider, useThemeContext } from "./src/context/ThemeContext";
 import EditTicketScreen from "./src/screens/EditTicketScreen";
 
 // Import screens
 import AdminPanelScreen from "./src/screens/AdminPanelScreen";
 import AdminTicketDetailScreen from "./src/screens/AdminTicketDetailScreen";
+import ChangePasswordScreen from "./src/screens/ChangePasswordScreen";
 import CreateTicketScreen from "./src/screens/CreateTicketScreen";
 import DashboardScreen from "./src/screens/DashboardScreen";
 import ForgotPasswordScreen from "./src/screens/ForgotPasswordScreen";
 import LoginScreen from "./src/screens/LoginScreen";
+import ProfileScreen from "./src/screens/ProfileScreen";
 import SignupScreen from "./src/screens/SignupScreen";
 import TicketDetailScreen from "./src/screens/TicketDetailScreen";
 import TicketListScreen from "./src/screens/TicketListScreen";
 
 const Stack = createStackNavigator();
 
-export default function App() {
+function MainAppNavigator() {
+  const { theme } = useThemeContext();
   const [isLoading, setIsLoading] = useState(true);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const navigationRef = useRef(null);
 
   useEffect(() => {
     checkLoginStatus();
@@ -46,11 +51,11 @@ export default function App() {
   }
 
   return (
-    <NavigationContainer>
+    <NavigationContainer ref={navigationRef} theme={theme === 'dark' ? DarkTheme : DefaultTheme}>
       <Stack.Navigator
         initialRouteName="Login"
         screenOptions={{
-          headerStyle: { backgroundColor: "#1976d2" },
+          headerStyle: { backgroundColor: theme === 'dark' ? '#121212' : '#1976d2' },
           headerTintColor: "#fff",
           headerTitleStyle: { fontWeight: "bold" },
         }}
@@ -105,7 +110,25 @@ export default function App() {
           component={AdminTicketDetailScreen}
           options={{ title: "Ticket Details (Admin)" }}
         />
+        <Stack.Screen
+          name="Profile"
+          component={ProfileScreen}
+          options={{ title: "My Profile" }}
+        />
+        <Stack.Screen
+          name="ChangePassword"
+          component={ChangePasswordScreen}
+          options={{ title: "Change Password" }}
+        />
       </Stack.Navigator>
     </NavigationContainer>
+  );
+}
+
+export default function App() {
+  return (
+    <ThemeProvider>
+      <MainAppNavigator />
+    </ThemeProvider>
   );
 }
