@@ -1,50 +1,151 @@
-# Welcome to your Expo app 👋
+# 📱 osTicket Mobile
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+A cross-platform mobile application built with **React Native + Expo** that provides a mobile interface for the [osTicket](https://osticket.com/) open-source help desk system. Manage and interact with support tickets on Android, iOS, and web — all from one codebase.
 
-## Get started
+---
 
-1. Install dependencies
+## ✨ Features
 
-   ```bash
-   npm install
-   ```
+- 🎫 View, create, and manage support tickets
+- 💬 Reply to ticket threads in real time
+- 📎 Attach files and images to tickets (via `expo-document-picker` & `expo-image-picker`)
+- 🔔 Haptic feedback for interactive actions
+- 🗂️ Bottom tab and stack navigation
+- 🔐 Async storage for persistent session/auth data
+- 🌐 REST API integration with your osTicket backend via `axios`
+- 📦 Global state management with Redux Toolkit
 
-2. Start the app
+---
 
-   ```bash
-   npx expo start
-   ```
+## 🛠️ Tech Stack
 
-In the output, you'll find options to open the app in a
+| Category | Technology |
+|---|---|
+| Framework | [Expo](https://expo.dev) ~54 / React Native 0.81 |
+| Language | JavaScript (ES2023) + TypeScript |
+| Navigation | React Navigation v7 (Stack + Bottom Tabs) |
+| State Management | Redux Toolkit + React Redux |
+| HTTP Client | Axios |
+| UI Library | React Native Paper |
+| Storage | AsyncStorage |
+| Animations | React Native Reanimated |
+| Icons | Expo Vector Icons |
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+---
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+## 📁 Project Structure
 
-## Get a fresh project
+```
+osticket-mobile/
+├── App.js                  # Entry point
+├── app.json                # Expo configuration
+├── src/                    # Core application source
+│   ├── api/                # Axios API calls to osTicket backend
+│   ├── screens/            # App screens (Tickets, Login, Details, etc.)
+│   ├── store/              # Redux slices and store setup
+│   └── navigation/         # Navigation configuration
+├── components/             # Reusable UI components
+├── constants/              # App-wide constants (colors, API URLs, etc.)
+└── assets/
+    └── images/             # App images and icons
+```
 
-When you're ready, run:
+---
+
+## 🚀 Getting Started
+
+### Prerequisites
+
+- [Node.js](https://nodejs.org/) (v18 or above recommended)
+- [Expo CLI](https://docs.expo.dev/get-started/installation/)
+- A running [osTicket](https://osticket.com/) instance with API access enabled
+
+### Installation
+
+```bash
+# Clone the repository
+git clone https://github.com/katotemanish28/osticket-mobile.git
+cd osticket-mobile
+
+# Install dependencies
+npm install
+```
+
+### Configuration
+
+Update your osTicket API base URL in `constants/` (e.g., `constants/api.js`):
+
+```js
+export const API_BASE_URL = 'https://your-osticket-instance.com/api';
+export const API_KEY = 'your-api-key-here';
+```
+
+### Running the App
+
+```bash
+# Start the Expo development server
+npx expo start
+```
+
+Then open the app using one of:
+
+| Platform | Command / Method |
+|---|---|
+| Android | Press `a` or scan QR in Expo Go |
+| iOS | Press `i` or scan QR in Expo Go |
+| Web | Press `w` |
+
+---
+
+## 📦 Available Scripts
+
+| Script | Description |
+|---|---|
+| `npm start` | Start the Expo dev server |
+| `npm run android` | Launch on Android emulator |
+| `npm run ios` | Launch on iOS simulator |
+| `npm run web` | Launch in browser |
+| `npm run lint` | Run ESLint |
+
+---
+
+## 🔗 osTicket API
+
+This app connects to your osTicket backend using the [osTicket REST API](https://docs.osticket.com/en/latest/Developer%20Documentation/API/). Make sure:
+
+1. API access is **enabled** in your osTicket admin panel (`Admin > Settings > API`)
+2. An **API key** is generated and has the necessary permissions
+3. Your server allows **CORS** if testing on web
+
+---
+
+## 🧹 Reset to Blank Project
+
+If you want to start fresh from the Expo template:
 
 ```bash
 npm run reset-project
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+This moves the starter code to `app-example/` and creates a clean `app/` directory.
 
-## Learn more
+---
 
-To learn more about developing your project with Expo, look at the following resources:
+## 🤝 Contributing
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+Contributions are welcome! Please open an issue first to discuss what you'd like to change, then submit a pull request.
 
-## Join the community
+---
 
-Join our community of developers creating universal apps.
+## 📄 License
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+This project is private. All rights reserved © katotemanish28.
+
+---
+
+## 📚 Resources
+
+- [Expo Documentation](https://docs.expo.dev/)
+- [osTicket API Docs](https://docs.osticket.com/en/latest/Developer%20Documentation/API/)
+- [React Navigation Docs](https://reactnavigation.org/)
+- [Redux Toolkit Docs](https://redux-toolkit.js.org/)
