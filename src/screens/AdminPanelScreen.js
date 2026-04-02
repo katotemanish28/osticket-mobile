@@ -14,8 +14,6 @@ import {
 import { API_BASE_URL } from '../api/config';
 import { useThemeContext } from '../context/ThemeContext';
 
-// API_BASE_URL already ends with /api, e.g. "http://192.168.1.8:3000/api"
-// So admin routes are: API_BASE_URL + "/admin/tickets"
 
 const STATUS_OPTIONS = ['open', 'resolved', 'closed'];
 const PRIORITY_OPTIONS = [
@@ -44,7 +42,7 @@ const AdminPanelScreen = ({ navigation }) => {
             });
             const json = await response.json();
             if (json.success) {
-                setTickets(json.tickets || []);  // server returns { success, tickets: [...] }
+                setTickets(json.tickets || []);  
             } else {
                 setError(json.message || 'Failed to load admin tickets');
             }

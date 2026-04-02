@@ -242,7 +242,11 @@ export const createTicket = async (ticketData) => {
       message: ticketData.message,
       priority: ticketData.priority || 2,
       topicId: ticketData.topicId || 1,
-      deptId: ticketData.deptId || 1,
+      deptId: ticketData.departmentId || 1,
+      ticketSource: ticketData.ticketSource || 'API',
+      slaPlanId: ticketData.slaPlanId || 0,
+      dueDate: ticketData.dueDate || null,
+      assignTo: ticketData.assignTo || 0,
     });
 
     const data = response.data.data || response.data;
@@ -481,13 +485,106 @@ export const getHelpTopics = async () => {
     };
   }
 
-  // REAL API MODE
   try {
     const response = await api.get("/help-topics");
 
     return {
       success: true,
-      data: response.data,
+      data: response.data.data || response.data,
+    };
+  } catch (error) {
+    return {
+      success: false,
+      error: error.message,
+      data: [],
+    };
+  }
+};
+
+/**
+ * Get agents
+ */
+export const getDepartments = async () => {
+  if (MOCK_MODE) {
+    await new Promise((resolve) => setTimeout(resolve, 500));
+    return {
+      success: true,
+      data: [
+        { id: 'Maintenance', name: 'Maintenance' },
+        { id: 'Sales', name: 'Sales' },
+        { id: 'Support', name: 'Support' },
+      ],
+    };
+  }
+
+  try {
+    const response = await api.get("/form-options/departments");
+    return { success: true, data: response.data.data || response.data };
+  } catch (error) {
+    return { success: false, error: error.message, data: [] };
+  }
+};
+
+export const getSlaPlans = async () => {
+  if (MOCK_MODE) {
+    await new Promise((resolve) => setTimeout(resolve, 500));
+    return {
+      success: true,
+      data: [
+        { id: 'Default SLA (18 hours-Active)', name: 'Default SLA (18 hours-Active)' }
+      ],
+    };
+  }
+
+  try {
+    const response = await api.get("/form-options/slas");
+    return { success: true, data: response.data.data || response.data };
+  } catch (error) {
+    return { success: false, error: error.message, data: [] };
+  }
+};
+
+export const getTicketSources = async () => {
+  if (MOCK_MODE) {
+    await new Promise((resolve) => setTimeout(resolve, 500));
+    return {
+      success: true,
+      data: [
+        { id: 'Phone', name: 'Phone' },
+        { id: 'Email', name: 'Email' },
+        { id: 'Other', name: 'Other' },
+      ],
+    };
+  }
+
+  try {
+    const response = await api.get("/form-options/sources");
+    return { success: true, data: response.data.data || response.data };
+  } catch (error) {
+    return { success: false, error: error.message, data: [] };
+  }
+};
+
+/**
+ * Get agents
+ */
+export const getAgents = async () => {
+  if (MOCK_MODE) {
+    await new Promise((resolve) => setTimeout(resolve, 500));
+    return {
+      success: true,
+      data: [
+        { id: 1, name: "Mock Agent 1" },
+        { id: 2, name: "Mock Agent 2" },
+      ],
+    };
+  }
+
+  try {
+    const response = await api.get("/admin/agents");
+    return {
+      success: true,
+      data: response.data.data,
     };
   } catch (error) {
     return {
@@ -697,6 +794,10 @@ export default {
   searchTickets,
   getTicketStats,
   getHelpTopics,
+  getDepartments,
+  getSlaPlans,
+  getTicketSources,
+  getAgents,
   getCustomFields,
   updateTicket,
   deleteTicket,

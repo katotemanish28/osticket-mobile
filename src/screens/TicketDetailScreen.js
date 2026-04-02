@@ -221,6 +221,11 @@ const TicketDetailScreen = ({ route, navigation }) => {
     user_name: ticket.user_name || 'User',
     user_email: ticket.user_email || '',
     message: ticket.message || '',
+    help_topic: ticket.help_topic || 'Not Specified',
+    department: ticket.department_name || 'Default',
+    sla_plan: ticket.sla_name || 'System Default',
+    source: ticket.source || 'Web',
+    duedate: ticket.duedate,
   };
 
   return (
@@ -270,6 +275,30 @@ const TicketDetailScreen = ({ route, navigation }) => {
               <Text style={styles.metadataLabel}>Email:</Text>
               <Text style={styles.metadataValue}>{displayTicket.user_email}</Text>
             </View>
+            <View style={styles.metadataRow}>
+              <Text style={styles.metadataLabel}>Help Topic:</Text>
+              <Text style={styles.metadataValue}>{displayTicket.help_topic}</Text>
+            </View>
+            <View style={styles.metadataRow}>
+              <Text style={styles.metadataLabel}>Department:</Text>
+              <Text style={styles.metadataValue}>{displayTicket.department}</Text>
+            </View>
+            <View style={styles.metadataRow}>
+              <Text style={styles.metadataLabel}>SLA Plan:</Text>
+              <Text style={styles.metadataValue}>{displayTicket.sla_plan}</Text>
+            </View>
+            <View style={styles.metadataRow}>
+              <Text style={styles.metadataLabel}>Source:</Text>
+              <Text style={styles.metadataValue}>{displayTicket.source}</Text>
+            </View>
+            {displayTicket.duedate && (
+              <View style={styles.metadataRow}>
+                <Text style={styles.metadataLabel}>Due Date:</Text>
+                <Text style={[styles.metadataValue, { color: '#d32f2f' }]}>
+                  {new Date(displayTicket.duedate).toLocaleDateString()}
+                </Text>
+              </View>
+            )}
           </View>
 
           {/* Message */}

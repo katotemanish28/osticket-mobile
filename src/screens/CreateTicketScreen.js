@@ -1,6 +1,8 @@
 // src/screens/CreateTicketScreen.js
 // Create Ticket Screen with File Upload Support
 
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import DateTimePicker from '@react-native-community/datetimepicker';
 import * as DocumentPicker from 'expo-document-picker';
 import * as ImagePicker from 'expo-image-picker';
 import { useEffect, useState } from 'react';
@@ -16,7 +18,7 @@ import {
   View,
 } from 'react-native';
 import { APP_CONFIG, VALIDATION } from '../api/config';
-import { createTicket, getHelpTopics, uploadAttachment } from '../api/osticket';
+import { createTicket, getAgents, getDepartments, getHelpTopics, getSlaPlans, getTicketSources, uploadAttachment } from '../api/osticket';
 import { useThemeContext } from '../context/ThemeContext';
 
 const CreateTicketScreen = ({ navigation }) => {
@@ -25,22 +27,62 @@ const CreateTicketScreen = ({ navigation }) => {
   const styles = createStyles(isDark);
   const [loading, setLoading] = useState(false);
   const [helpTopics, setHelpTopics] = useState([]);
+  const [userData, setUserData] = useState(null);
   const [formData, setFormData] = useState({
     subject: '',
     message: '',
-    priority: 3, // Normal
+    priority: 2, // Normal
     topicId: null,
+    ticketSource: 'Phone',
+    departmentId: null,
+    slaPlanId: null,
+    dueDate: '',
+    assignTo: null,
     name: '',
     email: '',
     phone: '',
   });
   const [attachments, setAttachments] = useState([]);
   const [errors, setErrors] = useState({});
+  const [showTopicDropdown, setShowTopicDropdown] = useState(false);
+  const [showSourceDropdown, setShowSourceDropdown] = useState(false);
+  const [showDeptDropdown, setShowDeptDropdown] = useState(false);
+  const [showSlaDropdown, setShowSlaDropdown] = useState(false);
+  const [showAssignDropdown, setShowAssignDropdown] = useState(false);
+  const [showDatePicker, setShowDatePicker] = useState(false);
+  const [agents, setAgents] = useState([]);
+  const [departments, setDepartments] = useState([]);
+  const [slaPlans, setSlaPlans] = useState([]);
+  const [ticketSources, setTicketSources] = useState([]);
 
   useEffect(() => {
-    loadHelpTopics();
+    loadUser();
+    loadFormOptions();
     requestPermissions();
   }, []);
+
+  const loadAgents = async () => {
+    const result = await getAgents();
+    if (result.success) {
+      setAgents(result.data);
+    }
+  };
+
+  // Load user data to check for admin role
+  const loadUser = async () => {
+    try {
+      const stored = await AsyncStorage.getItem('userData');
+      if (stored) {
+        const parsedUser = JSON.parse(stored);
+        setUserData(parsedUser);
+        if (parsedUser.role === 'admin') {
+          loadAgents();
+        }
+      }
+    } catch (e) {
+      console.error('Failed to load user data:', e);
+    }
+  };
 
   // Request camera and media library permissions
   const requestPermissions = async () => {
@@ -57,15 +99,18 @@ const CreateTicketScreen = ({ navigation }) => {
     }
   };
 
-  // Load help topics from API
-  const loadHelpTopics = async () => {
-    const result = await getHelpTopics();
-    if (result.success) {
-      setHelpTopics(result.data);
-      if (result.data.length > 0) {
-        setFormData(prev => ({ ...prev, topicId: result.data[0].id }));
-      }
-    }
+  // Load form options from API
+  const loadFormOptions = async () => {
+    const [topicsRes, deptsRes, slasRes, sourcesRes] = await Promise.all([
+      getHelpTopics(),
+      getDepartments(),
+      getSlaPlans(),
+      getTicketSources()
+    ]);
+    if (topicsRes.success) setHelpTopics(topicsRes.data);
+    if (deptsRes.success) setDepartments(deptsRes.data);
+    if (slasRes.success) setSlaPlans(slasRes.data);
+    if (sourcesRes.success) setTicketSources(sourcesRes.data);
   };
 
   // Validate form inputs
@@ -276,15 +321,202 @@ const CreateTicketScreen = ({ navigation }) => {
         </View>
 
         {/* Help Topic Picker */}
-        {helpTopics.length > 0 && (
-          <View style={styles.inputContainer}>
-            <Text style={styles.label}>Category</Text>
-            <View style={styles.pickerContainer}>
-              {/* Note: Replace with proper Picker component */}
-              <Text style={styles.pickerText}>
-                {helpTopics.find(t => t.id === formData.topicId)?.topic || 'Select category'}
-              </Text>
+        <View style={styles.inputContainer}>
+          <Text style={styles.label}>Help Topic *</Text>
+          <TouchableOpacity
+            style={[
+              styles.pickerContainer,
+              showTopicDropdown && styles.pickerContainerOpen
+            ]}
+            onPress={() => setShowTopicDropdown(!showTopicDropdown)}
+            disabled={loading}
+          >
+            <Text style={styles.pickerText}>
+              {formData.topicId ? helpTopics.find(t => t.id === formData.topicId)?.topic || formData.topicId : '— Select Help Topic —'}
+            </Text>
+          </TouchableOpacity>
+          {showTopicDropdown && (
+            <View style={styles.dropdownContainer}>
+              {helpTopics.map((topic) => (
+                <TouchableOpacity
+                  key={topic.id}
+                  style={styles.dropdownItem}
+                  onPress={() => {
+                    setFormData({ ...formData, topicId: topic.id });
+                    setShowTopicDropdown(false);
+                  }}
+                >
+                  <Text style={styles.dropdownItemText}>{topic.topic}</Text>
+                </TouchableOpacity>
+              ))}
             </View>
+          )}
+        </View>
+
+        {/* Ticket Source Picker */}
+        <View style={styles.inputContainer}>
+          <Text style={styles.label}>Ticket Source *</Text>
+          <TouchableOpacity
+            style={[
+              styles.pickerContainer,
+              showSourceDropdown && styles.pickerContainerOpen
+            ]}
+            onPress={() => setShowSourceDropdown(!showSourceDropdown)}
+            disabled={loading}
+          >
+            <Text style={styles.pickerText}>
+              {formData.ticketSource || '— Select Source —'}
+            </Text>
+          </TouchableOpacity>
+
+          {showSourceDropdown && (
+            <View style={styles.dropdownContainer}>
+              {ticketSources.map((source) => (
+                <TouchableOpacity
+                  key={source.id}
+                  style={styles.dropdownItem}
+                  onPress={() => {
+                    setFormData({ ...formData, ticketSource: source.name });
+                    setShowSourceDropdown(false);
+                  }}
+                >
+                  <Text style={styles.dropdownItemText}>{source.name}</Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+          )}
+        </View>
+
+        {/* Department Picker */}
+        <View style={styles.inputContainer}>
+          <Text style={styles.label}>Department</Text>
+          <TouchableOpacity
+            style={[
+              styles.pickerContainer,
+              showDeptDropdown && styles.pickerContainerOpen
+            ]}
+            onPress={() => setShowDeptDropdown(!showDeptDropdown)}
+            disabled={loading}
+          >
+            <Text style={styles.pickerText}>
+              {formData.departmentId ? departments.find(d => d.id === formData.departmentId)?.name || formData.departmentId : '— Select Department —'}
+            </Text>
+          </TouchableOpacity>
+          {showDeptDropdown && (
+            <View style={styles.dropdownContainer}>
+              {departments.map((dept) => (
+                <TouchableOpacity
+                  key={dept.id}
+                  style={styles.dropdownItem}
+                  onPress={() => {
+                    setFormData({ ...formData, departmentId: dept.id });
+                    setShowDeptDropdown(false);
+                  }}
+                >
+                  <Text style={styles.dropdownItemText}>{dept.name}</Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+          )}
+        </View>
+
+        {/* SLA Plan Picker */}
+        <View style={styles.inputContainer}>
+          <Text style={styles.label}>SLA Plan</Text>
+          <TouchableOpacity
+            style={[
+              styles.pickerContainer,
+              showSlaDropdown && styles.pickerContainerOpen
+            ]}
+            onPress={() => setShowSlaDropdown(!showSlaDropdown)}
+            disabled={loading}
+          >
+            <Text style={styles.pickerText}>
+              {formData.slaPlanId ? slaPlans.find(s => s.id === formData.slaPlanId)?.name || formData.slaPlanId : '— System Default —'}
+            </Text>
+          </TouchableOpacity>
+          {showSlaDropdown && (
+            <View style={styles.dropdownContainer}>
+              {slaPlans.map((sla) => (
+                <TouchableOpacity
+                  key={sla.id}
+                  style={styles.dropdownItem}
+                  onPress={() => {
+                    setFormData({ ...formData, slaPlanId: sla.id });
+                    setShowSlaDropdown(false);
+                  }}
+                >
+                  <Text style={styles.dropdownItemText}>{sla.name}</Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+          )}
+        </View>
+
+        {/* Due Date Input */}
+        <View style={styles.inputContainer}>
+          <Text style={styles.label}>Due Date</Text>
+          <TouchableOpacity
+            style={styles.pickerContainer}
+            onPress={() => setShowDatePicker(true)}
+            disabled={loading}
+          >
+            <Text style={styles.pickerText}>
+              {formData.dueDate || 'YYYY-MM-DD'}
+            </Text>
+          </TouchableOpacity>
+          {showDatePicker && (
+            <DateTimePicker
+              value={formData.dueDate ? new Date(formData.dueDate) : new Date()}
+              mode="date"
+              display="default"
+              onChange={(event, selectedDate) => {
+                setShowDatePicker(Platform.OS === 'ios');
+                if (event.type === 'set' && selectedDate) {
+                  const dateStr = selectedDate.toISOString().split('T')[0];
+                  setFormData({ ...formData, dueDate: dateStr });
+                } else if (event.type === 'dismissed') {
+                  setShowDatePicker(false);
+                }
+              }}
+            />
+          )}
+        </View>
+
+        {/* Assign To (Admin Only) */}
+        {userData?.role === 'admin' && (
+          <View style={styles.inputContainer}>
+            <Text style={styles.label}>Assign To (Admin Only)</Text>
+            <TouchableOpacity
+              style={[
+                styles.pickerContainer,
+                showAssignDropdown && styles.pickerContainerOpen
+              ]}
+              onPress={() => setShowAssignDropdown(!showAssignDropdown)}
+              disabled={loading}
+            >
+              <Text style={styles.pickerText}>
+                {formData.assignTo ? agents.find(a => a.id === formData.assignTo)?.name : '— Select an Agent OR a Team —'}
+              </Text>
+            </TouchableOpacity>
+            {showAssignDropdown && (
+              <View style={styles.dropdownContainer}>
+                {agents.length > 0 ? agents.map((agent) => (
+                  <TouchableOpacity
+                    key={agent.id}
+                    style={styles.dropdownItem}
+                    onPress={() => {
+                      setFormData({ ...formData, assignTo: agent.id });
+                      setShowAssignDropdown(false);
+                    }}
+                  >
+                    <Text style={styles.dropdownItemText}>{agent.name}</Text>
+                  </TouchableOpacity>
+                )) : (
+                  <Text style={[styles.dropdownItemText, { padding: 12 }]}>No agents available</Text>
+                )}
+              </View>
+            )}
           </View>
         )}
 
@@ -293,10 +525,10 @@ const CreateTicketScreen = ({ navigation }) => {
           <Text style={styles.label}>Priority</Text>
           <View style={styles.priorityButtons}>
             {[
-              { value: 4, label: 'Low', color: '#388e3c' },
-              { value: 3, label: 'Normal', color: '#1976d2' },
-              { value: 2, label: 'Urgent', color: '#f57c00' },
-              { value: 1, label: 'Emergency', color: '#d32f2f' },
+              { value: 1, label: 'Low', color: '#388e3c' },
+              { value: 2, label: 'Normal', color: '#1976d2' },
+              { value: 3, label: 'High', color: '#f57c00' },
+              { value: 4, label: 'Emergency', color: '#d32f2f' },
             ].map((priority) => (
               <TouchableOpacity
                 key={priority.value}
@@ -455,6 +687,28 @@ const createStyles = (isDark) => StyleSheet.create({
     padding: 12,
   },
   pickerText: {
+    fontSize: 16,
+    color: isDark ? '#eee' : '#333',
+  },
+  pickerContainerOpen: {
+    borderBottomLeftRadius: 0,
+    borderBottomRightRadius: 0,
+  },
+  dropdownContainer: {
+    backgroundColor: isDark ? '#1e1e1e' : '#fff',
+    borderWidth: 1,
+    borderColor: isDark ? '#333' : '#ddd',
+    borderTopWidth: 0,
+    borderBottomLeftRadius: 8,
+    borderBottomRightRadius: 8,
+    overflow: 'hidden',
+  },
+  dropdownItem: {
+    padding: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: isDark ? '#333' : '#eee',
+  },
+  dropdownItemText: {
     fontSize: 16,
     color: isDark ? '#eee' : '#333',
   },
