@@ -12,6 +12,7 @@ import AdminTicketDetailScreen from "./src/screens/AdminTicketDetailScreen";
 import ChangePasswordScreen from "./src/screens/ChangePasswordScreen";
 import CreateTicketScreen from "./src/screens/CreateTicketScreen";
 import DashboardScreen from "./src/screens/DashboardScreen";
+import AgentManagementScreen from "./src/screens/AgentManagementScreen";
 import ForgotPasswordScreen from "./src/screens/ForgotPasswordScreen";
 import LoginScreen from "./src/screens/LoginScreen";
 import ProfileScreen from "./src/screens/ProfileScreen";
@@ -109,6 +110,11 @@ function MainAppNavigator() {
           name="AdminTicketDetail"
           component={AdminTicketDetailScreen}
           options={{ title: "Ticket Details (Admin)" }}
+        />
+        <Stack.Screen
+          name="AgentManagement"
+          component={AgentManagementScreen}
+          options={{ title: "Manage Agents" }}
         />
         <Stack.Screen
           name="Profile"

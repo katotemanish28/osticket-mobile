@@ -70,6 +70,8 @@ const DashboardScreen = ({ navigation }) => {
         text: 'Logout',
         style: 'destructive',
         onPress: async () => {
+          const { logout } = require('../api/osticket');
+          await logout();
           await AsyncStorage.removeItem('authToken');
           await AsyncStorage.removeItem('userData');
           navigation.replace('Login');

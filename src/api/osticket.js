@@ -124,6 +124,7 @@ export const login = async (email, password) => {
 export const register = async (name, email, password) => {
   try {
     const response = await api.post("/auth/register", { name, email, password });
+    cachedToken = response.data.token;
     return {
       success: true,
       data: response.data.data,
@@ -197,17 +198,9 @@ export const resetPassword = async (resetToken, newPassword) => {
  * Logout user
  */
 export const logout = async () => {
-  try {
-    await api.post("/auth/logout");
-    // Clear local storage
-    cachedToken = null;
-    return { success: true };
-  } catch (error) {
-    return {
-      success: false,
-      error: error.message,
-    };
-  }
+  // Clear local token variable
+  cachedToken = null;
+  return { success: true };
 };
 
 // ==================== TICKET FUNCTIONS ====================
@@ -778,6 +771,29 @@ export const changePassword = async (currentPassword, newPassword) => {
   }
 };
 
+export const createAgent = async (agentData) => {
+  if (MOCK_MODE) {
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+    return {
+      success: true,
+      data: { id: Math.floor(Math.random() * 1000), ...agentData },
+    };
+  }
+
+  try {
+    const response = await api.post("/admin/agents", agentData);
+    return {
+      success: true,
+      data: response.data.data,
+    };
+  } catch (error) {
+    return {
+      success: false,
+      error: error.response?.data?.message || "Failed to create agent",
+    };
+  }
+};
+
 export default {
   login,
   register,
@@ -798,6 +814,7 @@ export default {
   getSlaPlans,
   getTicketSources,
   getAgents,
+  createAgent,
   getCustomFields,
   updateTicket,
   deleteTicket,

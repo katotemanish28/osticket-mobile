@@ -1,6 +1,7 @@
+import { Ionicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useFocusEffect } from '@react-navigation/native';
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import {
     ActivityIndicator,
     Alert,
@@ -30,6 +31,22 @@ const AdminPanelScreen = ({ navigation }) => {
     const [loading, setLoading] = useState(true);
     const [refreshing, setRefreshing] = useState(false);
     const [error, setError] = useState(null);
+
+    // Add header buttons similar to DashboardScreen
+    useEffect(() => {
+        navigation.setOptions({
+            headerRight: () => (
+                <View style={{ flexDirection: 'row', alignItems: 'center', marginRight: 12 }}>
+                    <TouchableOpacity onPress={() => navigation.navigate('TicketList')} style={styles.headerBtn}>
+                        <Ionicons name="search" size={24} color="#fff" />
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={() => navigation.navigate('Profile')} style={{ ...styles.headerBtn, marginLeft: 8 }}>
+                        <Ionicons name="person-circle-outline" size={28} color="#fff" />
+                    </TouchableOpacity>
+                </View>
+            ),
+        });
+    }, [navigation, styles]);
 
     const fetchAdminTickets = useCallback(async (isRefresh = false) => {
         if (isRefresh) setRefreshing(true);
@@ -146,7 +163,25 @@ const AdminPanelScreen = ({ navigation }) => {
 
     return (
         <View style={styles.container}>
-            <Text style={styles.subtitle}>{tickets.length} ticket(s) total</Text>
+            <View style={styles.adminHeader}>
+                <Text style={styles.subtitle}>{tickets.length} ticket(s) total</Text>
+                <TouchableOpacity 
+                    style={styles.manageAgentsBtn}
+                    onPress={() => navigation.navigate('AgentManagement')}
+                >
+                    <Ionicons name="people" size={18} color="#fff" />
+                    <Text style={styles.manageAgentsBtnText}>Manage Agents</Text>
+                </TouchableOpacity>
+            </View>
+
+            <TouchableOpacity
+                style={styles.createTicketBtn}
+                onPress={() => navigation.navigate('CreateTicket')}
+            >
+                <Ionicons name="add-circle" size={24} color="#fff" />
+                <Text style={styles.createTicketBtnText}>Create New Ticket</Text>
+            </TouchableOpacity>
+            
             <FlatList
                 data={tickets}
                 keyExtractor={(item) => String(item.ticket_id ?? item.id ?? Math.random())}
@@ -172,7 +207,55 @@ const AdminPanelScreen = ({ navigation }) => {
 const createStyles = (isDark) => StyleSheet.create({
     container: { flex: 1, backgroundColor: isDark ? '#121212' : '#f5f5f5', padding: 16 },
     centered: { flex: 1, justifyContent: 'center', alignItems: 'center' },
-    subtitle: { fontSize: 13, color: isDark ? '#aaa' : '#888', marginBottom: 12 },
+    subtitle: { fontSize: 13, color: isDark ? '#aaa' : '#888' },
+    adminHeader: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        marginBottom: 16,
+        backgroundColor: isDark ? '#1e1e1e' : '#fff',
+        padding: 12,
+        borderRadius: 10,
+        elevation: 2,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 1 },
+        shadowOpacity: 0.1,
+        shadowRadius: 3,
+    },
+    manageAgentsBtn: {
+        backgroundColor: '#e65100',
+        flexDirection: 'row',
+        alignItems: 'center',
+        paddingHorizontal: 12,
+        paddingVertical: 8,
+        borderRadius: 8,
+        gap: 6,
+    },
+    manageAgentsBtnText: {
+        color: '#fff',
+        fontSize: 13,
+        fontWeight: 'bold',
+    },
+    createTicketBtn: {
+        backgroundColor: isDark ? '#90caf9' : '#1976d2',
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        paddingVertical: 14,
+        borderRadius: 10,
+        marginBottom: 16,
+        gap: 8,
+        elevation: 3,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.2,
+        shadowRadius: 4,
+    },
+    createTicketBtnText: {
+        color: isDark ? '#121212' : '#fff',
+        fontSize: 16,
+        fontWeight: 'bold',
+    },
     loadingText: { marginTop: 12, fontSize: 16, color: isDark ? '#aaa' : '#666' },
     errorText: { fontSize: 16, color: isDark ? '#ff5252' : '#c62828', textAlign: 'center', marginBottom: 16 },
     emptyText: { fontSize: 16, color: isDark ? '#888' : '#999' },
@@ -181,6 +264,10 @@ const createStyles = (isDark) => StyleSheet.create({
         paddingHorizontal: 24,
         paddingVertical: 12,
         borderRadius: 8,
+    },
+    headerBtn: {
+        paddingVertical: 4,
+        paddingHorizontal: 6,
     },
     retryBtnText: { color: '#fff', fontWeight: '600' },
     listContent: { paddingBottom: 24 },

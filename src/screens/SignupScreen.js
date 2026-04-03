@@ -56,7 +56,12 @@ const SignupScreen = ({ navigation }) => {
             if (result.success) {
                 await AsyncStorage.setItem('authToken', result.token);
                 await AsyncStorage.setItem('userData', JSON.stringify(result.data));
-                navigation.replace('Dashboard');
+                // Navigate based on user role
+                if (result.data && result.data.role === 'admin') {
+                    navigation.replace('AdminPanel');
+                } else {
+                    navigation.replace('Dashboard');
+                }
             } else {
                 Alert.alert('Registration Failed', result.error || 'Could not create account. Please try again.');
             }

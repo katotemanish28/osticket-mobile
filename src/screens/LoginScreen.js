@@ -2,7 +2,7 @@
 // Login Screen Component
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   ActivityIndicator,
   Alert,
@@ -25,6 +25,27 @@ const LoginScreen = ({ navigation }) => {
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({});
+
+  // Check for existing session
+  useEffect(() => {
+    const checkSession = async () => {
+      try {
+        const token = await AsyncStorage.getItem('authToken');
+        const userData = await AsyncStorage.getItem('userData');
+        if (token && userData) {
+          const user = JSON.parse(userData);
+          if (user.role === 'admin') {
+            navigation.replace('AdminPanel');
+          } else {
+            navigation.replace('Dashboard');
+          }
+        }
+      } catch (e) {
+        console.error('Session check error:', e);
+      }
+    };
+    checkSession();
+  }, [navigation]);
 
   // Validate inputs
   const validateInputs = () => {
@@ -62,8 +83,12 @@ const LoginScreen = ({ navigation }) => {
         await AsyncStorage.setItem('authToken', result.token);
         await AsyncStorage.setItem('userData', JSON.stringify(result.data));
 
-        // Navigate to main app
-        navigation.replace('Dashboard');
+        // Navigate based on user role
+        if (result.data && result.data.role === 'admin') {
+          navigation.replace('AdminPanel');
+        } else {
+          navigation.replace('Dashboard');
+        }
       } else {
         Alert.alert(
           'Login Failed',
