@@ -35,7 +35,7 @@ yarn-error.*
 .env*.local
 
 # API config (contains API key and local IP)
-src/api/config.js
+# src/api/config.js
 
 # typescript
 *.tsbuildinfo

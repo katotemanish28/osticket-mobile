@@ -252,7 +252,7 @@ const CreateTicketScreen = ({ navigation }) => {
 
         Alert.alert(
           'Success',
-          `Ticket #${result.ticketId} created successfully!`,
+          `Ticket #${result.data?.ticket_id || 'new'} created successfully!`,
           [
             {
               text: 'OK',

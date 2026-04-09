@@ -33,6 +33,7 @@ const api = axios.create({
   headers: {
     "Content-Type": "application/json",
     "X-API-Key": API_KEY,
+    "Bypass-Tunnel-Reminder": "true",
   },
   timeout: 10000, // 10 second timeout
 });
