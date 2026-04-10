@@ -3,7 +3,7 @@
 
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
-import { API_BASE_URL, API_KEY } from "./config";
+import { API_BASE_URL, API_KEY, API_CONFIG } from "./config";
 // Use real API (set to true only for testing without backend)
 const MOCK_MODE = false;
 
@@ -35,7 +35,7 @@ const api = axios.create({
     "X-API-Key": API_KEY,
     "Bypass-Tunnel-Reminder": "true",
   },
-  timeout: 10000, // 10 second timeout
+  timeout: API_CONFIG.timeout,
 });
 
 // Add request interceptor for auth tokens

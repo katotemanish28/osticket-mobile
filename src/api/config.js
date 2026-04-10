@@ -4,7 +4,7 @@ export const API_KEY = "2CE383D9A0AE107E1CE6774DC58CDAC2"; // osTicket API key (
 
 // API Configuration
 export const API_CONFIG = {
-  timeout: 10000, // 10 seconds
+  timeout: 60000, // 60 seconds to handle Render free tier cold start
   retryAttempts: 3,
   retryDelay: 1000, // 1 second
 };
